@@ -11,3 +11,4 @@
 11. Environment variable and .gitignore
 12. MVC (Model Views Controller) Architecture
 13. connect to mongodb database
+14. Schema and model for user
