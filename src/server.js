@@ -1,12 +1,6 @@
-import express from "express";
+import { app } from "./app.js";
+import { serverPort } from "./secret.js";
 
-const app = express();
-const port = 4000;
-
-app.get("/test", (req, res) => {
-  res.send(`Hello Anisul Server`);
-});
-
-app.listen(port, () => {
-  console.log(`Listening To The Port ${port} successfully`);
+app.listen(serverPort, () => {
+  console.log(`Listening To The Port ${serverPort} Successfully`);
 });
