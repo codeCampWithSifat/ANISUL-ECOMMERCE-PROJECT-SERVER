@@ -4,6 +4,9 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import createError from "http-errors";
 import { rateLimit } from "express-rate-limit";
+import seedRouter from "./routers/seedRouter.js";
+import userRouter from "./routers/userRouter.js";
+import { errrorResponse } from "./controllers/responseController.js";
 
 const app = express();
 
@@ -27,14 +30,18 @@ app.get("/test", (req, res) => {
   res.send(`Hello Anisul Server`);
 });
 
+// all the api
+app.use("/api/seed", seedRouter);
+app.use("/api/users", userRouter);
+
 app.use((req, res, next) => {
   next(createError(404, "Route Not Found"));
 });
 
 app.use((err, req, res, next) => {
-  return res.status(err.status || 500).json({
-    success: false,
-    message: err.message || "Internal Server Error",
+  return errrorResponse(res, {
+    statusCode: err.status,
+    message: err.message,
   });
 });
 

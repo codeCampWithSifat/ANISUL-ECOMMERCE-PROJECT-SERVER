@@ -12,3 +12,9 @@
 12. MVC (Model Views Controller) Architecture
 13. connect to mongodb database
 14. Schema and model for user
+15. Create Seed Route for Testing
+16. GET/api/users --> isAdmin --> getAllUsers --> searchByName or Email or phoneNumber and pagination
+17. responseController for error or success
+18. GET/api/users/:id --> get a single user by id
+19. How To Create Services in the backend
+20. DELETE/ api/users/:id --> delete a single user by id
