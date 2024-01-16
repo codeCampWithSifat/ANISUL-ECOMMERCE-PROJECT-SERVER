@@ -1,16 +1,16 @@
-import fs from "fs/promises";
+// import fs from "fs/promises";
 
-const deleteImage = async (imagePath) => {
-  try {
-    await fs.access(imagePath);
-    await fs.unlink(imagePath);
-    console.log("Image Deleted Successfully");
-  } catch (error) {
-    console.log("Failed To Delete Image , Try Again Later", error.toString());
-  }
-};
+// const deleteImage = async (imagePath) => {
+//   try {
+//     await fs.access(imagePath);
+//     await fs.unlink(imagePath);
+//     console.log("Image Deleted Successfully");
+//   } catch (error) {
+//     console.log("Failed To Delete Image , Try Again Later", error.toString());
+//   }
+// };
 
-export { deleteImage };
+// export { deleteImage };
 
 // const deleteImage = async (imagePath) => {
 //     fs.access(imagePath)

@@ -18,3 +18,9 @@
 18. GET/api/users/:id --> get a single user by id
 19. How To Create Services in the backend
 20. DELETE/ api/users/:id --> delete a single user by id
+21. Refactoring and resuablity dynamic
+22. deleteImage Handler
+23. POST->api/users/process-register =>process the registration
+24. Create JWT
+25. send email
+26. POST/api/users/verify --> verify + register into database
