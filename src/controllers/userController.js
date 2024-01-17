@@ -7,12 +7,14 @@ import { clientURL, jwtActivationKey } from "../secret.js";
 import { sendEmailWithNodeMailer } from "../helper/nodeMailer.js";
 import jwt from "jsonwebtoken";
 import { uploadOnCloudinary } from "../helper/cloudinayImageUploader.js";
+import { v2 as cloudinary } from "cloudinary";
+import { publicIdWithoutExtensionFromUrl } from "../helper/deleteCloudinaryImage.js";
 
 const getUsers = async (req, res, next) => {
   try {
     const search = req.query.search || "";
     const page = Number(req.query.page) || 1;
-    const limit = Number(req.query.limit) || 4;
+    const limit = Number(req.query.limit) || 10;
 
     const searchRegExp = new RegExp(".*" + search + ".*" + "i");
 
@@ -54,6 +56,7 @@ const getUsers = async (req, res, next) => {
 
 const getUserById = async (req, res, next) => {
   try {
+    console.log("get single user", req.user);
     const id = req.params.id;
     const user = await User.findById(id).select("-password");
 
@@ -171,7 +174,6 @@ const activateUserAccount = async (req, res, next) => {
     return successResponse(res, {
       statusCode: 201,
       message: "Your Account Registered Successfully. Please Login",
-      payload: decoded,
     });
   } catch (error) {
     if (error.name === "TokenExpiredError") {
@@ -184,10 +186,50 @@ const activateUserAccount = async (req, res, next) => {
   }
 };
 
+const updateUserById = async (req, res, next) => {
+  try {
+    const id = req.params.id;
+    const { name, address, phone } = req.body;
+    const image = req.file?.path;
+
+    // delete image from cloudinary
+    const existingUser = await User.findById({ _id: id });
+    if (existingUser && existingUser?.image) {
+      const publicId = await publicIdWithoutExtensionFromUrl(
+        existingUser?.image
+      );
+      const result = await cloudinary.uploader.destroy(publicId);
+      console.log(result);
+    }
+
+    // updated content
+    if (!name || !address || !phone) {
+      throw createError(400, "All Fields Are Required");
+    }
+    const userImage = await uploadOnCloudinary(image);
+    const user = await User.findByIdAndUpdate(
+      id,
+      { $set: { name, address, phone, image: userImage?.url } },
+      { new: true }
+    ).select("-password");
+    return successResponse(res, {
+      statusCode: 200,
+      message: "Update A User Successfully",
+      payload: { user },
+    });
+  } catch (error) {
+    if (error instanceof mongoose.Error) {
+      next(createError(400, "Invalid User Id"));
+    }
+    next(error);
+  }
+};
+
 export {
   getUsers,
   getUserById,
   deleteUserById,
   processRegister,
   activateUserAccount,
+  updateUserById,
 };

@@ -22,5 +22,11 @@
 22. deleteImage Handler
 23. POST->api/users/process-register =>process the registration
 24. Create JWT
-25. send email
-26. POST/api/users/verify --> verify + register into database
+25. setup smtp server and prepare email
+26. send email with nodemailer
+27. POST/api/users/verify --> verify + register into database
+28. add multer middleware for file upload
+29. Filtering files by size and types
+30. add express validator middlware
+31. should we store image as string or buffer --> I actually do it on cloudinary
+32. PUT/api/users/:id --> update a single user by id

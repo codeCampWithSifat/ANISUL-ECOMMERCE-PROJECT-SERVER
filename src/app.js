@@ -7,6 +7,7 @@ import { rateLimit } from "express-rate-limit";
 import seedRouter from "./routers/seedRouter.js";
 import userRouter from "./routers/userRouter.js";
 import { errrorResponse } from "./controllers/responseController.js";
+import { authRouter } from "./routers/authRouter.js";
 
 const app = express();
 
@@ -33,6 +34,7 @@ app.get("/test", (req, res) => {
 // all the api
 app.use("/api/seed", seedRouter);
 app.use("/api/users", userRouter);
+app.use("/api/auth", authRouter);
 
 app.use((req, res, next) => {
   next(createError(404, "Route Not Found"));
