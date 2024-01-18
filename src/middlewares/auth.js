@@ -27,9 +27,11 @@ const isLoggedOut = async (req, res, next) => {
         const decoded = jwt.verify(accessToken, jwtAccessKey);
         if (decoded) {
           throw createError(400, "User Already Logged In");
+        } else {
+          throw createError(404, "Token Expired... Please Login Again");
         }
       } catch (error) {
-        throw createError(401, "Token Expired with isLoggedOut");
+        throw next(error);
       }
     }
 

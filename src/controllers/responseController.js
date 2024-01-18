@@ -3,7 +3,7 @@ const errrorResponse = (
   { statusCode = 500, message = "Internal Server Error" }
 ) => {
   return res.status(statusCode).json({
-    successf: false,
+    success: false,
     message: message,
   });
 };

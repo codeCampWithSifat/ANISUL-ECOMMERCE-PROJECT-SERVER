@@ -9,6 +9,7 @@ import jwt from "jsonwebtoken";
 import { uploadOnCloudinary } from "../helper/cloudinayImageUploader.js";
 import { v2 as cloudinary } from "cloudinary";
 import { publicIdWithoutExtensionFromUrl } from "../helper/deleteCloudinaryImage.js";
+import bcrypt from "bcryptjs";
 
 const getUsers = async (req, res, next) => {
   try {
@@ -56,7 +57,6 @@ const getUsers = async (req, res, next) => {
 
 const getUserById = async (req, res, next) => {
   try {
-    console.log("get single user", req.user);
     const id = req.params.id;
     const user = await User.findById(id).select("-password");
 
@@ -225,6 +225,117 @@ const updateUserById = async (req, res, next) => {
   }
 };
 
+const handleBanUserById = async (req, res, next) => {
+  try {
+    const id = req.params.id;
+
+    const user = await User.findByIdAndUpdate(
+      id,
+      { $set: { isBanned: true } },
+      { new: true }
+    ).select("-password");
+    return successResponse(res, {
+      statusCode: 200,
+      message: "Banned A User Successfully",
+      payload: { user },
+    });
+  } catch (error) {
+    if (error instanceof mongoose.Error.CastError) {
+      throw createError(404, "Invalid Mongodb id");
+    }
+    return next(error);
+  }
+};
+
+const handleUnBanUserById = async (req, res, next) => {
+  try {
+    const id = req.params.id;
+
+    const user = await User.findByIdAndUpdate(
+      id,
+      { $set: { isBanned: false } },
+      { new: true }
+    ).select("-password");
+    return successResponse(res, {
+      statusCode: 200,
+      message: "Banned A User Successfully",
+      payload: { user },
+    });
+  } catch (error) {
+    return next(error);
+  }
+};
+
+const handleBanUnBanUserById = async (req, res, next) => {
+  try {
+    const id = req.params.id;
+    const { action } = req.body;
+
+    let update;
+    let successMessage;
+    if (action === "ban") {
+      update = { isBanned: true };
+      successMessage = "User Ban Successfully";
+    } else if (action === "unban") {
+      update = { isBanned: false };
+      successMessage = "User Unbanned Successfully";
+    } else {
+      throw createError(400, "Invalid Action... Please Take A Valid Action");
+    }
+
+    const user = await User.findByIdAndUpdate(
+      id,
+      { $set: update },
+      { new: true }
+    ).select("-password");
+
+    return successResponse(res, {
+      statusCode: 200,
+      message: successMessage,
+      payload: { user },
+    });
+  } catch (error) {
+    return next(error);
+  }
+};
+
+const handleUpdatePassword = async (req, res, next) => {
+  try {
+    const { email, oldPassword, newPassword, confirmPassword } = req.body;
+    const userId = req.params.id;
+    const user = await User.findOne({ $or: [{ email }, { _id: userId }] });
+    if (!user) {
+      throw createError(404, "User Not Exists");
+    }
+    const isPasswordMatch = await bcrypt.compare(oldPassword, user?.password);
+    if (!isPasswordMatch) {
+      throw createError(401, "Your Old Password Not Matched");
+    } else if (newPassword !== confirmPassword) {
+      throw createError(401, "newPassword/confirmPassword Not Matched");
+    }
+
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      { $set: { password: newPassword } },
+      { new: true }
+    );
+
+    if (!updatedUser) {
+      throw createError(400, "User Not Updated, Internal Error");
+    }
+    return successResponse(res, {
+      statusCode: 200,
+      message: "Update User Password Successfully",
+      payload: { updatedUser },
+    });
+  } catch (error) {
+    if (error instanceof mongoose.Error.CastError) {
+      return createError(404, "User Id Not Found");
+    }
+    return next(error);
+  }
+};
+
 export {
   getUsers,
   getUserById,
@@ -232,4 +343,8 @@ export {
   processRegister,
   activateUserAccount,
   updateUserById,
+  handleBanUserById,
+  handleUnBanUserById,
+  handleBanUnBanUserById,
+  handleUpdatePassword,
 };

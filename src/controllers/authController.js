@@ -31,10 +31,10 @@ const handleLogin = async (req, res, next) => {
     }
 
     //create jwt
-    const accessToken = createJSONWebToken({ user }, jwtAccessKey, "15m");
+    const accessToken = createJSONWebToken({ user }, jwtAccessKey, "2h");
 
     res.cookie("accessToken", accessToken, {
-      maxAge: 15 * 60 * 1000,
+      maxAge: 2 * 60 * 60 * 1000,
       httpOnly: true,
       //   secure: true,
       sameSite: "none",

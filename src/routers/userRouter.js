@@ -6,6 +6,10 @@ import {
   processRegister,
   activateUserAccount,
   updateUserById,
+  handleBanUserById,
+  handleUnBanUserById,
+  handleBanUnBanUserById,
+  handleUpdatePassword,
 } from "../controllers/userController.js";
 import { upload } from "../middlewares/uploadFile.js";
 import { validateUserRegistraion } from "../validators/auth.js";
@@ -27,5 +31,14 @@ userRouter.get("/", isLoggedIn, isAdmin, getUsers);
 userRouter.get("/:id", isLoggedIn, getUserById);
 userRouter.delete("/:id", isLoggedIn, deleteUserById);
 userRouter.put("/:id", upload.single("image"), isLoggedIn, updateUserById);
+userRouter.put("/ban-user/:id", isLoggedIn, isAdmin, handleBanUserById);
+userRouter.put("/unban-user/:id", isLoggedIn, isAdmin, handleUnBanUserById);
+userRouter.put(
+  "/ban-unban-user/:id",
+  isLoggedIn,
+  isAdmin,
+  handleBanUnBanUserById
+);
+userRouter.put("/update-password/:id", isLoggedIn, handleUpdatePassword);
 
 export default userRouter;

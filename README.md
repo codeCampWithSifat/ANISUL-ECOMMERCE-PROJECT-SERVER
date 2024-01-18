@@ -30,3 +30,13 @@
 30. add express validator middlware
 31. should we store image as string or buffer --> I actually do it on cloudinary
 32. PUT/api/users/:id --> update a single user by id
+33. POST/api/auth/login --> user login
+34. POST/api/auth/logout --> user logout
+35. middlewares -> isLoggedIn, isLoggout, isAdmin
+36. input validation when signed in and refactoring
+37. PUT/api/users/ban-user ---> ban user
+38. PUT/api/users/unban-user --> unban user
+39. PUT/api/users/update-password --> update the password
+40. POST/api/users/forget-password --> forget the password
+41. PUT/api/users/reset-password --> reset the password
+42. GET/api/auth/refresh --> refresh the token
