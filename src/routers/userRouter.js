@@ -10,6 +10,8 @@ import {
   handleUnBanUserById,
   handleBanUnBanUserById,
   handleUpdatePassword,
+  handleForgetPassword,
+  handleResetPassword,
 } from "../controllers/userController.js";
 import { upload } from "../middlewares/uploadFile.js";
 import { validateUserRegistraion } from "../validators/auth.js";
@@ -26,6 +28,9 @@ userRouter.post(
   runValidation,
   processRegister
 );
+userRouter.post("/forget-password", handleForgetPassword);
+userRouter.put("/reset-password", handleResetPassword);
+
 userRouter.post("/verify", isLoggedOut, activateUserAccount);
 userRouter.get("/", isLoggedIn, isAdmin, getUsers);
 userRouter.get("/:id", isLoggedIn, getUserById);

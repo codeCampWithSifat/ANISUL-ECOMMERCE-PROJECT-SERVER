@@ -3,7 +3,7 @@ import { User } from "../models/userModel.js";
 import { successResponse } from "./responseController.js";
 import mongoose from "mongoose";
 import { createJSONWebToken } from "../helper/jsonwebtoken.js";
-import { clientURL, jwtActivationKey } from "../secret.js";
+import { clientURL, jwtActivationKey, jwtResetPasswordKey } from "../secret.js";
 import { sendEmailWithNodeMailer } from "../helper/nodeMailer.js";
 import jwt from "jsonwebtoken";
 import { uploadOnCloudinary } from "../helper/cloudinayImageUploader.js";
@@ -128,7 +128,7 @@ const processRegister = async (req, res, next) => {
       subject: "Account Activation Email . Please Active Your Account ✔", // Subject line
       html: `
         <h2>Hello ${name} . Hope You Are Well?.</h2>
-        <p>Please Click Here to this link <a href="${clientURL}/users/activate/${token}" target="_blank">activate your account</a> </p>
+        <p>Please Click Here to this link <a href="${clientURL}/api/users/activate/${token}" target="_blank">activate your account</a> </p>
       `,
     };
 
@@ -336,6 +336,73 @@ const handleUpdatePassword = async (req, res, next) => {
   }
 };
 
+const handleForgetPassword = async (req, res, next) => {
+  try {
+    const { email } = req.body;
+    const isExists = await User.findOne({ email: email });
+    if (!isExists) {
+      throw createError(404, "User Not Found In This Email");
+    }
+
+    // create jsonwebtoken
+    const token = createJSONWebToken({ email }, jwtResetPasswordKey, "1d");
+
+    // prepare email
+
+    const emailData = {
+      email,
+      subject: "Account Foget Password Email . Try Out Your Forget Password ✔", // Subject line
+      html: `
+        <h2>Hello ${isExists.name} . Hope You Are Well?.</h2>
+        <p>Please Click Here to this link <a href="${clientURL}/api/users/reset-password/activate/${token}" target="_blank">Reset Your Password</a> </p>
+      `,
+    };
+
+    // send email with nodemailer
+
+    try {
+      await sendEmailWithNodeMailer(emailData);
+    } catch (error) {
+      next(createError(404, "Send To Failed .... Reset Password Email"));
+    }
+
+    return successResponse(res, {
+      statusCode: 200,
+      message: "Forget Password Handler Done Successfully",
+      payload: { token },
+    });
+  } catch (error) {
+    return next(error);
+  }
+};
+
+const handleResetPassword = async (req, res, next) => {
+  try {
+    const { token, newPassword } = req.body;
+    if (!token || !newPassword) {
+      throw createError(401, "Token/NewPassword is missing");
+    }
+    const decoded = jwt.verify(token, jwtResetPasswordKey);
+    if (!decoded) {
+      throw createError(401, "Reset Password Decoded Failed");
+    }
+    // console.log(decoded);
+    const email = decoded?.email;
+    const updatedUser = await User.findOneAndUpdate(
+      { email },
+      { $set: { password: newPassword } },
+      { new: true }
+    ).select("-password");
+    return successResponse(res, {
+      statusCode: 200,
+      message: "Reset Your Password Successfullly",
+      payload: { updatedUser },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 export {
   getUsers,
   getUserById,
@@ -347,4 +414,6 @@ export {
   handleUnBanUserById,
   handleBanUnBanUserById,
   handleUpdatePassword,
+  handleForgetPassword,
+  handleResetPassword,
 };

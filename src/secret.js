@@ -7,6 +7,10 @@ const smtpUserName = process.env.SMTP_USERNAME;
 const smtpPassword = process.env.SMTP_PASSWORD;
 const clientURL = process.env.CLIENT_URL || "http://localhost:3000";
 const jwtAccessKey = process.env.JWT_ACCESS_KEY || "coding-rider";
+const jwtResetPasswordKey =
+  process.env.JWT_RESET_PASSWORD_KEY || "coding-rider-reset";
+
+const jwtRefreshKey = process.env.JWT_REFRESH_KEY || "coding-rider-refresh-key";
 
 export {
   serverPort,
@@ -16,4 +20,6 @@ export {
   smtpPassword,
   clientURL,
   jwtAccessKey,
+  jwtResetPasswordKey,
+  jwtRefreshKey,
 };
