@@ -7,10 +7,9 @@ import { clientURL, jwtActivationKey, jwtResetPasswordKey } from "../secret.js";
 import { sendEmailWithNodeMailer } from "../helper/nodeMailer.js";
 import jwt from "jsonwebtoken";
 import { uploadOnCloudinary } from "../helper/cloudinayImageUploader.js";
-import { v2 as cloudinary } from "cloudinary";
 import { publicIdWithoutExtensionFromUrl } from "../helper/deleteCloudinaryImage.js";
 import bcrypt from "bcryptjs";
-
+import { cloudinary } from "../config/cloudinaryConfig.js";
 const getUsers = async (req, res, next) => {
   try {
     const search = req.query.search || "";
@@ -80,6 +79,16 @@ const getUserById = async (req, res, next) => {
 const deleteUserById = async (req, res, next) => {
   try {
     const id = req.params.id;
+    const existingUser = await User.findOne({ _id: id });
+    if (existingUser && existingUser.image) {
+      const publicId = await publicIdWithoutExtensionFromUrl(
+        existingUser.image
+      );
+      const { result } = await cloudinary.uploader.destroy(
+        `AnisulEcommerceMern/users/${publicId}`
+      );
+      console.log(result);
+    }
     const user = await User.findByIdAndDelete({
       _id: id,
       isAdmin: false,
@@ -113,11 +122,11 @@ const processRegister = async (req, res, next) => {
       throw createError(404, "User Already Exists. Please Login");
     }
 
-    // upload file in cloudinary
-    const userImage = await uploadOnCloudinary(localImage);
+    // // upload file in cloudinary
+    // const userImage = await uploadOnCloudinary(localImage);
     // create jsonwebtoken
     const token = createJSONWebToken(
-      { name, email, password, phone, address, image: userImage?.url },
+      { name, email, password, phone, address, image: localImage },
       jwtActivationKey,
       "1d"
     );
@@ -169,6 +178,13 @@ const activateUserAccount = async (req, res, next) => {
       );
     }
 
+    const image = decoded?.image;
+    if (image) {
+      const response = await cloudinary.uploader.upload(image, {
+        folder: "AnisulEcommerceMern/users",
+      });
+      decoded.image = response?.secure_url;
+    }
     await User.create(decoded);
 
     return successResponse(res, {

@@ -3,9 +3,9 @@ import path from "path";
 import createError from "http-errors";
 
 const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, "./public/images/users");
-  },
+  // destination: function (req, file, cb) {
+  //   cb(null, "./public/images/users");
+  // },
   filename: function (req, file, cb) {
     cb(null, file.originalname);
   },
