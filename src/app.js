@@ -8,6 +8,8 @@ import seedRouter from "./routers/seedRouter.js";
 import userRouter from "./routers/userRouter.js";
 import { errrorResponse } from "./controllers/responseController.js";
 import { authRouter } from "./routers/authRouter.js";
+import { serverPort } from "./secret.js";
+import connectDB from "./config/db.js";
 
 const app = express();
 
@@ -16,6 +18,8 @@ const limiter = rateLimit({
   max: 15,
   message: "Too Many Request ... Try Again Later",
 });
+
+// await connectDB();
 
 // use all the middleware
 
