@@ -39,4 +39,13 @@
 39. PUT/api/users/update-password --> update the password
 40. POST/api/users/forget-password --> forget the password
 41. PUT/api/users/reset-password --> reset the password
-42. GET/api/auth/refresh --> refresh the token
+42. GET/api/auth/refresh --> generate refresh the token
+43. GET/api/auth/protected --> verify the token and give access to other routes
+44. refactoring
+45. modular code structure
+46. winston logger library
+47. Category Model and Input Validation
+48. category CRUD --> Create Category
+49. Category CRUD --> Read Category
+50. Categroy CRUD --> Update Category
+51. Category CRUD --> Delete Category

@@ -8,8 +8,7 @@ import seedRouter from "./routers/seedRouter.js";
 import userRouter from "./routers/userRouter.js";
 import { errrorResponse } from "./controllers/responseController.js";
 import { authRouter } from "./routers/authRouter.js";
-import { serverPort } from "./secret.js";
-import connectDB from "./config/db.js";
+import { categoryRouter } from "./routers/categoryRouter.js";
 
 const app = express();
 
@@ -39,6 +38,7 @@ app.get("/", (req, res) => {
 app.use("/api/seed", seedRouter);
 app.use("/api/users", userRouter);
 app.use("/api/auth", authRouter);
+app.use("/api/categories", categoryRouter);
 
 app.use((req, res, next) => {
   next(createError(404, "Route Not Found"));
