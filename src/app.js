@@ -31,7 +31,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static("public"));
 app.use(cookieParser());
 
-app.get("/test", (req, res) => {
+app.get("/", (req, res) => {
   res.send(`Hello Anisul Server`);
 });
 
